@@ -38,12 +38,22 @@ public class Case02 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
+
 		// トップページへアクセス
 		goTo("http://localhost:8080/lms");
 
-		// ログイン画面が表示されていることを確認
+		// ログイン画面のタイトルを取得
 		WebElement title = webDriver.findElement(By.tagName("h2"));
+
+		// タイトルの期待値確認
 		assertEquals("ログイン", title.getText());
+
+		// ログインボタンを取得
+		WebElement loginButton = webDriver.findElement(
+				By.cssSelector("input[type='submit']"));
+
+		// ログインボタンの期待値確認
+		assertEquals("ログイン", loginButton.getAttribute("value"));
 
 		// エビデンス取得
 		getEvidence(new Object() {
@@ -54,19 +64,25 @@ public class Case02 {
 	@Order(2)
 	@DisplayName("テスト02 DBに登録されていないユーザーでログイン")
 	void test02() {
+
 		// ログイン画面へアクセス
 		goTo("http://localhost:8080/lms");
 
-		// DBに登録されていないユーザー情報を入力
+		// ログインIDを入力
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA99");
+
+		// パスワードを入力
 		webDriver.findElement(By.id("password")).sendKeys("StudentAA99");
 
 		// ログインボタンを押下
-		webDriver.findElement(By.cssSelector("input[type='submit']")).click();
+		webDriver.findElement(
+				By.cssSelector("input[type='submit']")).click();
 
-		// ログイン失敗メッセージを確認
+		// ログイン失敗メッセージを取得
 		WebElement errorMessage = webDriver.findElement(
 				By.cssSelector("span.help-inline.error"));
+
+		// 期待値確認
 		assertEquals("* ログインに失敗しました。", errorMessage.getText());
 
 		// エビデンス取得
