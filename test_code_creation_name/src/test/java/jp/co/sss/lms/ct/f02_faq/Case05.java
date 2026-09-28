@@ -3,9 +3,7 @@ package jp.co.sss.lms.ct.f02_faq;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * 結合テスト よくある質問機能
@@ -43,24 +40,17 @@ public class Case05 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-
-		// トップページへアクセス
 		goTo("http://localhost:8080/lms");
 
-		// ログイン画面のタイトルを取得
-		WebElement title = webDriver.findElement(By.tagName("h2"));
-
-		// タイトルの期待値確認
+		WebElement title = webDriver.findElement(
+				By.tagName("h2"));
 		assertEquals("ログイン", title.getText());
 
-		// ログインボタンを取得
 		WebElement loginButton = webDriver.findElement(
 				By.cssSelector("input[type='submit']"));
+		assertEquals("ログイン",
+				loginButton.getAttribute("value"));
 
-		// ログインボタンの期待値確認
-		assertEquals("ログイン", loginButton.getAttribute("value"));
-
-		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -69,25 +59,22 @@ public class Case05 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
+		webDriver.findElement(By.id("loginId"))
+				.sendKeys("StudentAA02");
 
-		// ログインIDを入力
-		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
+		webDriver.findElement(By.id("password"))
+				.sendKeys("864Catch");
 
-		// パスワードを入力
-		webDriver.findElement(By.id("password")).sendKeys("864Catch");
-
-		// ログインボタンを押下
 		webDriver.findElement(
-				By.cssSelector("input[type='submit']")).click();
+				By.cssSelector("input[type='submit']"))
+				.click();
 
-		// コース詳細画面のタイトルを取得
 		WebElement courseDetail = webDriver.findElement(
 				By.cssSelector("li.active"));
 
-		// 期待値確認
-		assertEquals("コース詳細", courseDetail.getText());
+		assertEquals("コース詳細",
+				courseDetail.getText());
 
-		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -99,19 +86,22 @@ public class Case05 {
 
 		// 「機能」メニューを開く
 		webDriver.findElement(By.xpath(
-				"//a[contains(@class,'dropdown-toggle') and contains(normalize-space(.),'機能')]"))
+				"//li[contains(@class,'dropdown')][.//a[normalize-space()='ヘルプ']]"
+						+ "//a[contains(@class,'dropdown-toggle')]"))
 				.click();
 
 		// 「ヘルプ」を押下
-		webDriver.findElement(By.linkText("ヘルプ")).click();
+		webDriver.findElement(By.xpath(
+				"//li[contains(@class,'dropdown')][.//a[normalize-space()='ヘルプ']]"
+						+ "//ul//a[normalize-space()='ヘルプ']"))
+				.click();
 
-		// ヘルプ画面のタイトルを取得
-		WebElement title = webDriver.findElement(By.tagName("h2"));
+		WebElement title = webDriver.findElement(
+				By.tagName("h2"));
 
-		// 期待値確認
-		assertEquals("ヘルプ", title.getText());
+		assertEquals("ヘルプ",
+				title.getText());
 
-		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -121,38 +111,26 @@ public class Case05 {
 	@DisplayName("テスト04 「よくある質問」リンクからよくある質問画面を別タブに開く")
 	void test04() {
 
-		// 現在のタブを取得
 		String currentWindow = webDriver.getWindowHandle();
 
-		// 現在のタブ数を取得
-		int windowCount = webDriver.getWindowHandles().size();
+		webDriver.findElement(
+				By.cssSelector("a[href$='/faq']"))
+				.click();
 
-		// 「よくある質問」を押下
-		webDriver.findElement(By.linkText("よくある質問")).click();
+		for (String window : webDriver.getWindowHandles()) {
 
-		// 新しいタブが開くまで待機
-		WebDriverWait wait = new WebDriverWait(
-				webDriver, Duration.ofSeconds(5));
-
-		wait.until(driver -> driver.getWindowHandles().size() > windowCount);
-
-		// 新しいタブへ切り替え
-		Set<String> windowHandles = webDriver.getWindowHandles();
-
-		for (String windowHandle : windowHandles) {
-			if (!windowHandle.equals(currentWindow)) {
-				webDriver.switchTo().window(windowHandle);
+			if (!window.equals(currentWindow)) {
+				webDriver.switchTo().window(window);
 				break;
 			}
 		}
 
-		// よくある質問画面のタイトルを取得
-		WebElement title = webDriver.findElement(By.tagName("h2"));
+		WebElement title = webDriver.findElement(
+				By.tagName("h2"));
 
-		// 期待値確認
-		assertEquals("よくある質問", title.getText());
+		assertEquals("よくある質問",
+				title.getText());
 
-		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -162,7 +140,7 @@ public class Case05 {
 	@DisplayName("テスト05 キーワード検索で該当キーワードを含む検索結果だけ表示")
 	void test05() {
 
-		// FAQの1件目の質問から検索キーワードを取得
+		// 表示されている質問から検索キーワードを取得
 		WebElement question = webDriver.findElement(
 				By.cssSelector("tbody tr dl dt"));
 
@@ -171,25 +149,39 @@ public class Case05 {
 				.trim();
 
 		// キーワードを入力
-		webDriver.findElement(By.id("form")).sendKeys(keyword);
+		webDriver.findElement(By.id("form"))
+				.sendKeys(keyword);
 
 		// 検索ボタンを押下
 		webDriver.findElement(
-				By.cssSelector("input[type='submit'][value='検索']")).click();
+				By.cssSelector(
+						"input[type='submit'][value='検索']"))
+				.click();
 
 		// 検索結果を取得
 		List<WebElement> results = webDriver.findElements(
 				By.cssSelector("tbody tr dl"));
 
-		// 検索結果が1件以上あることを確認
-		assertTrue(results.size() > 0);
+		assertFalse(results.isEmpty());
 
-		// 検索結果にキーワードが含まれていることを確認
+		// 表示された検索結果の質問内容を確認
 		for (WebElement result : results) {
-			assertTrue(result.getText().contains(keyword));
+
+			WebElement resultQuestion = result.findElement(
+					By.tagName("dt"));
+
+			// 検索結果の質問が表示されていること
+			assertTrue(resultQuestion.isDisplayed());
+
+			// 検索結果の質問内容が存在すること
+			String questionText = resultQuestion.getText().trim();
+
+			assertFalse(questionText.isEmpty());
+
+			// 表示された質問に検索キーワードが含まれること
+			assertTrue(questionText.contains(keyword));
 		}
 
-		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -199,17 +191,16 @@ public class Case05 {
 	@DisplayName("テスト06 「クリア」ボタン押下で入力したキーワードを消去")
 	void test06() {
 
-		// 「クリア」ボタンを押下
 		webDriver.findElement(
-				By.cssSelector("input[type='button'][value='クリア']")).click();
+				By.cssSelector(
+						"input[type='button'][value='クリア']"))
+				.click();
 
-		// キーワード入力欄を取得
-		WebElement keyword = webDriver.findElement(By.id("form"));
+		WebElement form = webDriver.findElement(By.id("form"));
 
-		// 入力欄が空になっていることを確認
-		assertEquals("", keyword.getAttribute("value"));
+		assertEquals("",
+				form.getAttribute("value"));
 
-		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
