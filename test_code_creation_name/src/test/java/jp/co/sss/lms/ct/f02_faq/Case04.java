@@ -69,9 +69,6 @@ public class Case04 {
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
 
-		// ログイン画面へアクセス
-		goTo("http://localhost:8080/lms");
-
 		// ログインIDを入力
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
 
